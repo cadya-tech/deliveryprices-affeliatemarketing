@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>أسعار التوصيل حسب الولايات الجزائرية</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 15px;
+        }
+        
+        .search-container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        #searchInput {
+            width: 100%;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 30px;
+            font-size: 1rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .filters {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .filter-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-right: 4px solid #2a5298;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .province-id {
+            background-color: #2a5298;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        
+        .province-name {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #1e3c72;
+        }
+        
+        .info-row {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+        
+        .icon {
+            margin-left: 10px;
+            color: #2a5298;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        
+        .info-text {
+            flex: 1;
+            color: #555;
+            font-size: 0.95rem;
+        }
+        
+        .prices {
+            display: flex;
+            justify-content: space-between;
+            margin-top: auto;
+            padding-top: 15px;
+            border-top: 1px dashed #ddd;
+        }
+        
+        .price-item {
+            text-align: center;
+            flex: 1;
+        }
+        
+        .price-label {
+            font-size: 0.85rem;
+            color: #777;
+            margin-bottom: 5px;
+        }
+        
+        .price-value {
+            font-weight: bold;
+            color: #1e3c72;
+            font-size: 1.1rem;
+        }
+        
+        .unavailable {
+            text-decoration: line-through;
+            color: #999;
+            opacity: 0.7;
+        }
+        
+        .unavailable .province-name {
+            color: #999;
+        }
+        
+        .unavailable .province-id {
+            background-color: #999;
+        }
+        
+        .delivery-fast {
+            border-right-color: #28a745;
+        }
+        
+        .delivery-medium {
+            border-right-color: #ffc107;
+        }
+        
+        .delivery-slow {
+            border-right-color: #dc3545;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-size: 1.1rem;
+        }
+        
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .filters {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .card {
+                padding: 15px;
+            }
+            
+            .province-name {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>أسعار التوصيل حسب الولايات الجزائرية</h1>
+            <p class="subtitle">معلومات عن مكاتب التوصيل وأسعارها في جميع ولايات الجزائر</p>
+            
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="ابحث عن ولاية...">
+            </div>
+            
+            <div class="filters">
+                <button class="filter-btn" data-filter="all">الكل</button>
+                <button class="filter-btn" data-filter="fast">توصيل سريع (1-2 أيام)</button>
+                <button class="filter-btn" data-filter="medium">توصيل متوسط (2-4 أيام)</button>
+                <button class="filter-btn" data-filter="slow">توصيل طويل (3-7 أيام)</button>
+            </div>
+        </header>
+        
+        <div class="grid" id="provincesGrid">
+            <!-- All 58 provinces will be inserted here by JavaScript -->
+        </div>
+        
+        <footer>
+            <p>جميع الأسعار بالدينار الجزائري (دج)</p>
+            <p>© 2023 - معلومات التوصيل لجميع ولايات الجزائر</p>
+        </footer>
+    </div>
+
+    <script>
+        // Province data
+        const provinces = [
+            { id: "01", name: "أدرار", address: "route de lycée EL MEGHILI derrière l'ancien conseil judiciaire - ADRAR", deliveryTime: "3-7 ايام", price: "1000 دج", officePrice: "600 دج", deliverySpeed: "slow" },
+            { id: "02", name: "الشلف", address: "HAY BENSSOUNA 48 LOGEMENTS CNP BLOCK D a cote de CASNOS", deliveryTime: "1-2 ايام", price: "600 دج", officePrice: "350 دج", deliverySpeed: "fast" },
+            { id: "03", name: "الأغواط", address: "rue ben sahnoun a cote de centre d'imagerie laghouati, cité el makam, laghouat", deliveryTime: "1-3 ايام", price: "750 دج", officePrice: "500 دج", deliverySpeed: "medium" },
+            { id: "04", name: "أم البواقي", address: "Ain fekroun, a 300 m station des bus a cote de l'agence CNAS", deliveryTime: "1-3 ايام", price: "700 دج", officePrice: "400 دج", deliverySpeed: "medium" },
+            { id: "05", name: "باتنة", address: "rond point de cite 1020 Igtms la route vers CASNOS", deliveryTime: "1-3 ايام", price: "650 دج", officePrice: "350 دج", deliverySpeed: "medium" },
+            { id: "06", name: "بجاية", address: "promotionn immobilière EPBTP bloc 4 en face centre commercial boubaya", deliveryTime: "1-3 ايام", price: "550 دج", officePrice: "300 دج", deliverySpeed: "medium" },
+            { id: "07", name: "بسكرة", address: "Cité 350 logements Participatifs Zone ouest Bloc 09 local 191", deliveryTime: "2-4 ايام", price: "800 دج", officePrice: "500 دج", deliverySpeed: "medium" },
+            { id: "08", name: "بشار", address: "centre ville just a coté de laboratoire d'analyses ABSI - BECHAR", deliveryTime: "3-5 ايام", price: "1050 دج", officePrice: "700 دج", deliverySpeed: "slow" },
+            { id: "09", name: "البليدة", address: "monponsie en face lycée omar ibn khatab", deliveryTime: "24 ساعة", price: "250 دج", officePrice: "0 دج", deliverySpeed: "fast" },
+            { id: "10", name: "البويرة", address: "Cadat B ville de bouira", deliveryTime: "1-2 ايام", price: "600 دج", officePrice: "400 دج", deliverySpeed: "fast" },
+            { id: "11", name: "تمنراست", address: "cité el horfra sarsoufa à coté du SEAL", deliveryTime: "1-3 ايام", price: "1200 دج", officePrice: "600 دج", deliverySpeed: "medium" },
+            { id: "12", name: "تبسة", address: "Skanska, citè el Amel derrière la grande mosquèe", deliveryTime: "1-3 ايام", price: "700 دج", officePrice: "450 دج", deliverySpeed: "medium" },
+            { id: "13", name: "تلمسان", address: "Rue de Chetouane A coté de la station d'essence sidi said", deliveryTime: "1-3 ايام", price: "700 دج", officePrice: "400 دج", deliverySpeed: "medium" },
+            { id: "14", name: "تيارت", address: "en face mosquée EL SALEM, EPLF tiaret ville", deliveryTime: "1-3 ايام", price: "700 دج", officePrice: "400 دج", deliverySpeed: "medium" },
+            { id: "15", name: "تيزي وزو", address: "En face les batiments blues", deliveryTime: "1-2 ايام", price: "550 دج", officePrice: "350 دج", deliverySpeed: "fast" },
+            { id: "16", name: "الجزائر", address: "Birkhadem, CHEMAIN ROMAIN 07-70- 23-81-51  CHERAGA: a cote de l'institut pastor 07-70-80-31-37  REGHAIA: cité LPP bourada - reghaia 05-55-21-42-18", deliveryTime: "24 ساعة", price: "250 دج", officePrice: "100 دج", deliverySpeed: "fast" },
+            { id: "17", name: "الجلفة", address: "cité 05 juillet vers l'université ZIAN ACHOUR en face commisariat centrale", deliveryTime: "1-2 ايام", price: "750 دج", officePrice: "500 دج", deliverySpeed: "fast" },
+            { id: "18", name: "جيجل", address: "rue bouicher messaoud cité agouf camp chevalier", deliveryTime: "1-3 ايام", price: "600 دج", officePrice: "400 دج", deliverySpeed: "medium" },
+            { id: "19", name: "سطيف", address: ",SETIF : Cite el hidab 50 lgtms, LST      ///////////////                              EULMA: à coté d un cafè STARBUCKS", deliveryTime: "1-3 ايام", price: "550 دج", officePrice: "350 دج", deliverySpeed: "medium" },
+            { id: "20", name: "سعيدة", address: "Rue Belarbi Laaredj sur la ligne de 20 l'hotel EL MORDJANE - SAIDA centre ville", deliveryTime: "1-3 ايام", price: "750 دج", officePrice: "450 دج", deliverySpeed: "medium" },
+            { id: "21", name: "سكيكدة", address: "a cote du centre régional du service national et du complexe des jeunes des freres SAKER 07-70-13-41-27", deliveryTime: "1-3 ايام", price: "650 دج", officePrice: "400 دج", deliverySpeed: "medium" },
+            { id: "22", name: "سيدي بلعباس", address: "Cité 144 logts bloc A2 SIDI DJILAL en face cafétéria golden 07-73-33-69-02 07-70-39-71-17 07-72-14-45-58", deliveryTime: "1-3 ايام", price: "650 دج", officePrice: "400 دج", deliverySpeed: "medium" },
+            { id: "23", name: "عنابة", address: "cité AADL sidi achour, BT W04 magasin N°03- annaba 07-74-72-95-27", deliveryTime: "1-3 ايام", price: "550 دج", officePrice: "350 دج", deliverySpeed: "medium" },
+            { id: "24", name: "قالمة", address: "a cote ecole ennajah centre ville 07-97-80-47-45", deliveryTime: "1-3 ايام", price: "700 دج", officePrice: "400 دج", deliverySpeed: "medium" },
+            { id: "25", name: "قسنطينة", address: "EPLF 864 logements ali mendili nouvelle ville", deliveryTime: "1-3 ايام", price: "550 دج", officePrice: "350 دج", deliverySpeed: "medium" },
+            { id: "26", name: "المدية", address: "pole urbain en face centre commercial et a cote de la station d'essence ben hafri", deliveryTime: "1-2 ايام", price: "600 دج", officePrice: "400 دج", deliverySpeed: "fast" },
+            { id: "27", name: "مستغانم", address: "chamouma en face la residence universitaire 2200 lits houari boumedier", deliveryTime: "1-3 ايام", price: "600 دج", officePrice: "400 دج", deliverySpeed: "medium" },
+            { id: "28", name: "المسيلة", address: "quartier SOUNITAX, la route vers la station des bus a cote du laboratoire d'analyse médicale EL CHIFAA", deliveryTime: "2-4 ايام", price: "650 دج", officePrice: "400 دج", deliverySpeed: "medium" },
+            { id: "29", name: "معسكر", address: "Rue bakhlouf adda en face docteur REFSI", deliveryTime: "1-3 ايام", price: "650 دج", officePrice: "400 دج", deliverySpeed: "medium" },
+            { id: "30", name: "ورقلة", address: "Rue el nacer a coté du clinique dentaire boukhris", deliveryTime: "2-4 ايام", price: "800 دج", officePrice: "500 دج", deliverySpeed: "medium" },
+            { id: "31", name: "وهران", address: "akid lotfi enface la poste pré du commissariat 9ème", deliveryTime: "1-3 ايام", price: "550 دج", officePrice: "300 دج", deliverySpeed: "medium" },
+            { id: "32", name: "البيض", address: "sur la route de MAHBOULA just a cote de sonelgaz en face la maison LG - EL BAYADI", deliveryTime: "2-4 ايام", price: "850 دج", officePrice: "550 دج", deliverySpeed: "medium" },
+            { id: "33", name: "إليزي", address: "", deliveryTime: "3-7 ايام", price: "1300 دج", officePrice: "900 دج", deliverySpeed: "slow" },
+            { id: "34", name: "برج بوعريريج", address: "Rue laribi lakhdar cite 80 logts coperative deriere le centre commercial carrefour", deliveryTime: "1-3 ايام", price: "600 دج", officePrice: "400 دج", deliverySpeed: "medium" },
+            { id: "35", name: "بومرداس", address: "cité 350 Igts bt 21 au rez-de-chaussée", deliveryTime: "1-2 ايام", price: "500 دج", officePrice: "350 دج", deliverySpeed: "fast" },
+            { id: "36", name: "الطارف", address: "", deliveryTime: "1-3 ايام", price: "700 دج", officePrice: "400 دج", deliverySpeed: "medium" },
+            { id: "37", name: "تندوف", address: "local n 02 cité kassabi kism 23 n 122 tindouf", deliveryTime: "3-7 ايام", price: "1300 دج", officePrice: "900 دج", deliverySpeed: "slow" },
+            { id: "38", name: "تيسمسيلت", address: "plateau a cote e la salle des fetes BADRANE", deliveryTime: "1-3 ايام", price: "700 دج", officePrice: "400 دج", deliverySpeed: "medium" },
+            { id: "39", name: "الوادي", address: "Cité 400 logts centre ville EL OUED", deliveryTime: "2-4 ايام", price: "800 دج", officePrice: "500 دج", deliverySpeed: "medium" },
+            { id: "40", name: "خنشلة", address: "en face lyceé othmani abdelwahab la nouvelle ville - khanchela", deliveryTime: "1-3 ايام", price: "700 دج", officePrice: "450 دج", deliverySpeed: "medium" },
+            { id: "41", name: "سوق أهراس", address: "Route d'Alger, face au DR, KHELIFI - souk ahres 0", deliveryTime: "1-3 ايام", price: "800 دج", officePrice: "450 دج", deliverySpeed: "medium" },
+            { id: "42", name: "تيبازة", address: "Aadl 1700 BLOC 29 LOCAL C3", deliveryTime: "1-2 ايام", price: "500 دج", officePrice: "350 دج", deliverySpeed: "fast" },
+            { id: "43", name: "ميلة", address: "rond point bousouf", deliveryTime: "1-3 ايام", price: "650 دج", officePrice: "400 دج", deliverySpeed: "medium" },
+            { id: "44", name: "عين الدفلى", address: "cité nadjem mohamed, en face hotel NADJEM", deliveryTime: "1-2 ايام", price: "600 دج", officePrice: "400 دج", deliverySpeed: "fast" },
+            { id: "45", name: "النعامة", address: "", deliveryTime: "3-5 ايام", price: "900 دج", officePrice: "600 دج", deliverySpeed: "slow" },
+            { id: "46", name: "عين تموشنت", address: "", deliveryTime: "1-3 ايام", price: "600 دج", officePrice: "450 دج", deliverySpeed: "medium" },
+            { id: "47", name: "غرداية", address: "Rue cheikh abdelaziz el Thamini en face du collége cheikh 3 ben yazgen , ghardaia", deliveryTime: "2-4 ايام", price: "850 دج", officePrice: "500 دج", deliverySpeed: "medium" },
+            { id: "48", name: "غليزان", address: "Boulevard Zemmoura ( en face CEM NOUVEAU)", deliveryTime: "1-3 ايام", price: "600 دج", officePrice: "450 دج", deliverySpeed: "medium" },
+            { id: "49", name: "تيميمون", address: "", deliveryTime: "3-7 ايام", price: "1200 دج", officePrice: "700 دج", deliverySpeed: "slow" },
+            { id: "50", name: "برج باجي مختار", address: "", deliveryTime: "", price: "", officePrice: "", deliverySpeed: "unavailable" },
+            { id: "51", name: "اولاد جلال", address: "", deliveryTime: "3-7 ايام", price: "800 دج", officePrice: "500 دج", deliverySpeed: "slow" },
+            { id: "52", name: "بني عباس", address: "", deliveryTime: "3-7 ايام", price: "1100 دج", officePrice: "1100 دج", deliverySpeed: "slow" },
+            { id: "53", name: "عين صالح", address: "", deliveryTime: "3-7 ايام", price: "1200 دج", officePrice: "700 دج", deliverySpeed: "slow" },
+            { id: "54", name: "عين قزام", address: "", deliveryTime: "", price: "", officePrice: "", deliverySpeed: "unavailable" },
+            { id: "55", name: "تقرت", address: "", deliveryTime: "2-4 ايام", price: "850 دج", officePrice: "500 دج", deliverySpeed: "medium" },
+            { id: "56", name: "جانت", address: "", deliveryTime: "", price: "", officePrice: "", deliverySpeed: "unavailable" },
+            { id: "57", name: "المغير", address: "", deliveryTime: "2-4 ايام", price: "900 دج", officePrice: "900 دج", deliverySpeed: "medium" },
+            { id: "58", name: "المنيعة", address: "local n 39 jnan bailek elmniaa", deliveryTime: "3-7 ايام", price: "900 دج", officePrice: "600 دج", deliverySpeed: "slow" }
+        ];
+
+        // Function to render provinces
+        function renderProvinces(filteredProvinces = provinces) {
+            const grid = document.getElementById('provincesGrid');
+            grid.innerHTML = '';
+            
+            if (filteredProvinces.length === 0) {
+                grid.innerHTML = '<div class="no-results">لم يتم العثور على ولايات تطابق البحث</div>';
+                return;
+            }
+            
+            filteredProvinces.forEach(province => {
+                const card = document.createElement('div');
+                let cardClass = 'card';
+                
+                if (province.deliverySpeed === 'unavailable') {
+                    cardClass += ' unavailable';
+                } else {
+                    cardClass += ` delivery-${province.deliverySpeed}`;
+                }
+                
+                card.className = cardClass;
+                
+                let addressHTML = '';
+                if (province.address) {
+                    addressHTML = `
+                        <div class="info-row">
+                            <div class="icon">📍</div>
+                            <div class="info-text">${province.address}</div>
+                        </div>
+                    `;
+                }
+                
+                let deliveryTimeHTML = '';
+                if (province.deliveryTime) {
+                    deliveryTimeHTML = `
+                        <div class="info-row">
+                            <div class="icon">⏱️</div>
+                            <div class="info-text">${province.deliveryTime}</div>
+                        </div>
+                    `;
+                }
+                
+                let pricesHTML = '';
+                if (province.deliverySpeed === 'unavailable') {
+                    pricesHTML = `
+                        <div class="prices">
+                            <div class="price-item" style="flex: 0 0 100%;">
+                                <div class="price-label">الحالة</div>
+                                <div class="price-value">غير متوفر</div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    pricesHTML = `
+                        <div class="prices">
+                            <div class="price-item">
+                                <div class="price-label">التكلفة</div>
+                                <div class="price-value">${province.price}</div>
+                            </div>
+                            <div class="price-item">
+                                <div class="price-label">مكتب التوصيل</div>
+                                <div class="price-value">${province.officePrice}</div>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                card.innerHTML = `
+                    <div class="card-header">
+                        <div class="province-id">${province.id}</div>
+                        <div class="province-name">${province.name}</div>
+                    </div>
+                    ${addressHTML}
+                    ${deliveryTimeHTML}
+                    ${pricesHTML}
+                `;
+                
+                grid.appendChild(card);
+            });
+        }
+
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const filtered = provinces.filter(province => 
+                province.name.toLowerCase().includes(searchTerm) || 
+                province.id.includes(searchTerm)
+            );
+            renderProvinces(filtered);
+        });
+
+        // Filter functionality
+        document.querySelectorAll('.filter-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const filter = this.getAttribute('data-filter');
+                let filtered;
+                
+                if (filter === 'all') {
+                    filtered = provinces;
+                } else if (filter === 'fast') {
+                    filtered = provinces.filter(p => p.deliverySpeed === 'fast');
+                } else if (filter === 'medium') {
+                    filtered = provinces.filter(p => p.deliverySpeed === 'medium');
+                } else if (filter === 'slow') {
+                    filtered = provinces.filter(p => p.deliverySpeed === 'slow');
+                }
+                
+                renderProvinces(filtered);
+            });
+        });
+
+        // Initial render
+        renderProvinces();
+    </script>
+</body>
+</html>
